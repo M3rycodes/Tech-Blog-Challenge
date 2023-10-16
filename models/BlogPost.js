@@ -1,21 +1,29 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/connection'); // Import your Sequelize connection
+// BlogPost.js
+const mongoose = require('mongoose');
 
-const BlogPost = sequelize.define('BlogPost', {
+const blogPostSchema = new mongoose.Schema({
   title: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
   content: {
-    type: DataTypes.TEXT,
-    allowNull: false,
+    type: String,
+    required: true,
   },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Reference to the User model
+    required: true,
+  },
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment', // Reference to the Comment model
+    },
+  ],
 });
 
-// Define association with the User model
-BlogPost.belongsTo(User, {
-  foreignKey: 'userId',
-  onDelete: 'CASCADE',
-});
+const BlogPost = mongoose.model('BlogPost', blogPostSchema);
 
 module.exports = BlogPost;
+
