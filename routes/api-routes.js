@@ -1,7 +1,12 @@
-// api-routes.js
-module.exports = function (app) {
-    app.get('/api/message', (req, res) => {
-      res.json({ message: 'This is an API route.' });
-    });
-  };
-  
+const express = require('express');
+const router = express.Router();
+const users = require('./user');
+
+// Define your API routes here
+router.get('/users', (req, res) => {
+  res.json(users);
+});
+
+// You can add more routes for CRUD operations on users
+
+module.exports = router;

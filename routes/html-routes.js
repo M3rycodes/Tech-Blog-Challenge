@@ -1,13 +1,12 @@
-// html-routes.js
+const express = require('express');
 const path = require('path');
+const router = express.Router();
 
-module.exports = function (app) {
-  
-  app.get('/dashboard', (req, res) => {
-    res.render('dashboard');
-  });
+// Define your HTML routes here
+router.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'main.handlebars'));
+});
 
-  app.get('/login', (req, res) => {
-    res.render('login');
-  });
-};
+// Add more routes for other pages as needed
+
+module.exports = router;

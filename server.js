@@ -20,11 +20,11 @@ app.use(express.static('public'));
 // Import and use your route files
 const apiRoutes = require('./routes/api-routes');
 const htmlRoutes = require('./routes/html-routes');
+app.get('/', (req, res) => {
+  res.render('home');
+});
 app.use(apiRoutes);
 app.use(htmlRoutes);
-app.get('/', (req, res) => {
-  res.render('main');
-});
 
 // Start the server
 app.listen(PORT, () => {
