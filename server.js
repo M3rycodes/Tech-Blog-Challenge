@@ -1,15 +1,17 @@
 const express = require('express');
 const session = require('express-session');
-const passport = require('passport');
+const exphbs = require('express-handlebars');
+const hbs = exphbs.create();
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configure session and passport for authentication
 app.use(session({ secret: 'your-secret-key', resave: true, saveUninitialized: true }));
-app.use(passport.initialize());
-app.use(passport.session());
 
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
 // Set up Express to handle data parsing and static files
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -20,6 +22,9 @@ const apiRoutes = require('./routes/api-routes');
 const htmlRoutes = require('./routes/html-routes');
 app.use(apiRoutes);
 app.use(htmlRoutes);
+app.get('/', (req, res) => {
+  res.render('main');
+});
 
 // Start the server
 app.listen(PORT, () => {

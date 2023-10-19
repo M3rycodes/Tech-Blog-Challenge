@@ -1,6 +1,5 @@
 const express = require('express');
 const session = require('express-session');
-const passport = require('passport');
 const dotenv = require('dotenv');
 const sequelize = require('../models').sequelize;
 
@@ -19,9 +18,6 @@ app.use(
   })
 );
 
-// Initialize Passport.js
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Add more middleware and configuration as needed for your application
 // ...
