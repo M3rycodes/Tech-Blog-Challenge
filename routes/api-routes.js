@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const users = require('./user');
+
 
 // Define your API routes here
-router.get('/users', (req, res) => {
+router.get('/api/message', (req, res) => {
   res.json(users);
 });
 

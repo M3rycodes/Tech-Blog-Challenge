@@ -1,5 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
+const connection = require('./config/connection');
 const bcrypt = require('bcrypt');
 
 class User extends Model {
@@ -30,5 +31,13 @@ User.init(
     },
   }
 );
+
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+    username: String,
+    password: String,
+});
+
 
 module.exports = User;

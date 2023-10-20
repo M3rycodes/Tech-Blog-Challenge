@@ -8,6 +8,9 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #ffa500;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
 }
 
 .navbar {
@@ -57,6 +60,12 @@ body {
     line-height: 1.5;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+
 /* Style the footer */
 footer {
     background-color: #333;
@@ -73,3 +82,19 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+@media (min-width: 768px) {
+    /* Add styles for tablets and larger screens here */
+}
+
+@media (max-width: 768px) {
+    .navbar ul {
+        display: none;
+    }
+    /* Style the hamburger menu button and show it */
+    .navbar .menu-button {
+        display: block;
+    }
+}
+
+
