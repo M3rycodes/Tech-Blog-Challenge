@@ -90,7 +90,7 @@ app.post('/create', async (req, res) => {
 
 
 // Edit an existing post
-app.get('/edit/:id', async (req, res) => {
+app.get('/edit/:id/edit', async (req, res) => {
   const postId = req.params.id;
 
   try {
@@ -141,15 +141,6 @@ app.get('/dashboard', (req, res) => {
   res.render('dashboard', { posts } );
 });
 
-app.get('/dashboard', async (req, res) => {
-  try {
-    const posts = await Post.find();
-    res.render('dashboard', { posts });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching posts');
-  }
-});
 
 app.get('/login', (req, res) => {
   res.render('login');
@@ -167,8 +158,8 @@ app.get('/delete/:id', (req, res) => {
 
 app.use('/api', apiRoutes);
 // app.use('/' , htmlRoutes);
-//app.use('/api', loginRoutes);
-//app.use('/api', logoutRoutes);
+app.use('/api', loginRoutes);
+app.use('/api', logoutRoutes);
 
 // Start the server
 app.listen(PORT, () => {
