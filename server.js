@@ -1,14 +1,17 @@
+const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
-const hbs = exphbs.create({});
-const path = require('path');
+const routes = require('./controllers');
+const helpers = require('./utils/helpers');
+const sequelize = require('./config/connection');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const mongoose = require('mongoose');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt'); // Import the bcrypt library
 const User = require('./models/user'); // Import your User model
-const connection = require('../config/connection');
+
 const Post = require('./models/post'); // Import your Post model
 
 
@@ -16,20 +19,38 @@ const Post = require('./models/post'); // Import your Post model
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const hbs = exphbs.create({ helpers });
+
+const sess = {
+  secret: 'Super secret secret',
+  cookie: {
+    maxAge: 300000,
+    httpOnly: true,
+    secure: false,
+    sameSite: 'strict', 
+  },
+  resave: false,
+  saveUninitialized: true,
+  store: new SequelizeStore({
+    db: sequelize
+  })
+};
+
 
 // Configure session and passport for authentication
-app.use(session({ secret: 'your-secret-key', resave: true, saveUninitialized: true }));
+app.use(session(sess));
 
 app.engine('handlebars', hbs.engine);
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
 // Set up Express to handle data parsing and static files
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(routes);
+
 
 // Import and use your route files
 const apiRoutes = require('./routes/api-routes');
@@ -162,6 +183,6 @@ app.use('/api', loginRoutes);
 app.use('/api', logoutRoutes);
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+sequelize.sync({ force: false }).then(() => {
+app.listen(PORT, () => console.log('Now listening'));
 });
