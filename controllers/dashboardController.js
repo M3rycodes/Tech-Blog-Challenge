@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Post = require('../models/post'); // Import your Post model
+const Post = require('../models/blogpost'); // Import your Post model
 
 // Handle GET request to the dashboard page
 router.get('/dashboard', async (req, res) => {

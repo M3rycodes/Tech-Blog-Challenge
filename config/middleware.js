@@ -18,8 +18,4 @@ app.use(
   })
 );
 
-
-// Add more middleware and configuration as needed for your application
-// ...
-
 module.exports = app;
