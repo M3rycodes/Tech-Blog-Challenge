@@ -2,7 +2,9 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
-const routes = require('./controllers');
+const blogController = require('./controllers/blogController');
+const authController = require('./controllers/authController');
+const dashboardController = require('./controllers/dashboardController');
 const helpers = require('./utils/helpers');
 const sequelize = require('./config/connection');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
@@ -11,18 +13,13 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt'); // Import the bcrypt library
 const User = require('./models/user'); // Import your User model
-
 const Post = require('./models/post'); // Import your Post model
-
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const hbs = exphbs.create({ helpers });
-
 const sess = {
-  secret: 'Super secret secret',
+  secret: process.env.SESSION_SECRET || 'Super secret secret',
   cookie: {
     maxAge: 300000,
     httpOnly: true,
@@ -41,7 +38,6 @@ const sess = {
 app.use(session(sess));
 
 app.engine('handlebars', hbs.engine);
-app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
 // Set up Express to handle data parsing and static files
@@ -49,7 +45,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(routes);
 
 
 // Import and use your route files
@@ -86,7 +81,7 @@ passport.deserializeUser((id, done) => {
   });
 });
 
-mongoose.connect('mongodb://localhost/mongoose', {
+mongoose.connect(process.env.MONGOGB_URL || 'mongodb://localhost/mongoose', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -111,11 +106,17 @@ app.post('/create', async (req, res) => {
 
 
 // Edit an existing post
-app.get('/edit/:id/edit', async (req, res) => {
+app.get('/edit/:id', async (req, res) => {
   const postId = req.params.id;
 
   try {
     const post = await Post.findById(postId);
+    if (!post) {
+      // Handle the case where the post with the given ID is not found
+      return res.status(404).send('Post not found');
+    }
+
+    // Render the edit form with the post's data
     res.render('edit', { post });
   } catch (error) {
     console.error(error);
@@ -142,12 +143,21 @@ app.get('/delete/:id', async (req, res) => {
   const postId = req.params.id;
 
   try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      // Handle the case where the post with the given ID is not found
+      return res.status(404).send('Post not found');
+    }
+
+    // Delete the post
     await Post.findByIdAndRemove(postId);
+
+    // Redirect to the dashboard or another appropriate page
     res.redirect('/dashboard');
   } catch (error) {
     console.error(error);
     res.status(500).send('Error deleting post');
-  }
+  } 
 });
 
 
@@ -167,20 +177,23 @@ app.get('/login', (req, res) => {
   res.render('login');
 });
 
-app.get('/edit/:id', (req, res) => {
-  // Render a form to edit the selected post
-  // Populate the form with the post's current data
-});
-
-app.get('/delete/:id', (req, res) => {
-  // Handle the deletion of the selected post from your database
-  // Redirect to the dashboard or another appropriate page
-});
 
 app.use('/api', apiRoutes);
 // app.use('/' , htmlRoutes);
 app.use('/api', loginRoutes);
 app.use('/api', logoutRoutes);
+
+// Use the blogController for the main blog page
+app.use('/', blogController);
+// Use the authController for authentication-related routes
+app.use('/auth', authController);
+// Use the dashboardController for dashboard-related routes
+app.use('/dashboard', dashboardController);
+// Catch-all route for handling 404 errors
+app.use((req, res) => {
+  res.status(404).send('404 - Not Found');
+});
+
 
 // Start the server
 sequelize.sync({ force: false }).then(() => {
