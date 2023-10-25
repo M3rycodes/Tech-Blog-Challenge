@@ -1,5 +1,20 @@
-<h1>Welcome to the Blog</h1>
-{{#each posts}}
-  {{> post}}
-{{/each}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>My CMS-Blog Site</title>
+</head>
+<body>
+  <h1>My CMS-Blog Site</h1>
+
+  <ul>
+    {{#each blogPosts}}
+      <li>
+        <h2>{{title}}</h2>
+        <p>{{content}}</p>
+      </li>
+    {{/each}}
+  </ul>
+</body>
+</html>
+
 

@@ -1,5 +1,14 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/connection'); // Import your Sequelize connection
+const router = require('express').Router();
+
+const commentsController = require('../controllers/comments');
+
+router.post('/', commentsController.createComment);
+router.get('/: ');
+
+
+
 
 const Comment = sequelize.define('Comment', {
   text: {

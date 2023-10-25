@@ -2,17 +2,18 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const exphbs = require('express-handlebars');
+const hbs = require('express-handlebars');
 const blogController = require('./controllers/blogController');
 const authController = require('./controllers/authController');
 const dashboardController = require('./controllers/dashboardController');
-const helpers = require('./utils/helpers');
+const helpers = require('./models/helpers');
 const sequelize = require('./config/connection');
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt'); // Import the bcrypt library
 const User = require('./models/user'); // Import your User model
-const Post = require('./models/post'); // Import your Post model
+const blogPost = require('./models/blogpost'); // Import your Post model
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -47,47 +48,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Import and use your route files
-const apiRoutes = require('./routes/api-routes');
-const htmlRoutes = require('./routes/html-routes');
-const loginRoutes = require('./routes/login');
-const logoutRoutes = require('./routes/logout');
+const apiRoutes = require('./controllers/api/api-routes');
+const htmlRoutes = require('./controllers/api/html-routes');
+const loginRoutes = require('./public/js/login');
+const logoutRoutes = require('./public/js/logout');
+const signupRoutes = require('./public/js/signup');
 
 // Passport configuration should come before defining routes
 app.use(passport.initialize());
 app.use(passport.session());
-
-passport.use(new LocalStrategy(
-    (username, password, done) => {
-        User.findOne({ username }, (err, user) => {
-            if (err) return done(err);
-            if (!user) return done(null, false, { message: 'Incorrect username.' });
-
-            bcrypt.compare(password, user.password, (err, res) => {
-                if (res) return done(null, user);
-                else return done(null, false, { message: 'Incorrect password.' });
-            });
-        });
-    }
-));
-
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => {
-      done(err, user);
-  });
-});
-
-mongoose.connect(process.env.MONGOGB_URL || 'mongodb://localhost/mongoose', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-const db = mongoose.connection;
-
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
 app.post('/create', async (req, res) => {
@@ -166,10 +135,17 @@ app.get('/', (req, res) => {
   res.render('home');
 });
 
-app.get('/dashboard', (req, res) => {
+app.get('/dashboard',  (req, res) => {
   const posts = [];
   res.render('dashboard', { posts } );
 });
+
+// Protect this route with authentication
+app.get('/dashboard', passport.authenticate('local'), (req, res) => {
+  // The user is now authenticated
+  res.render('dashboard');
+});
+
 
 
 app.get('/login', (req, res) => {

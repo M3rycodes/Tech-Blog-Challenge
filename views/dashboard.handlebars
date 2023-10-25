@@ -1,11 +1,13 @@
 <!-- dashboard.handlebars -->
 <!DOCTYPE html>
-<html>
+<html long="en">
 <head>
     <title>Dashboard</title>
 </head>
 <body>
     <h1>Dashboard</h1>
+    
+    <p> Welcome, {{user.username}}!</p>
 
     <!-- Display existing posts -->
     {{#if posts.length}}
