@@ -17,7 +17,17 @@
     <input type="password" id="password" name="password" required>
     <button type="submit">Login</button>
 </form>
-<p id="login-feedback" style="color: red;"></p> <!-- Feedback message for login result -->
+<p id="login-feedback" style="color: red;"></p>
+
+ <!-- Feedback message for login result -->
+{{#if loginError}}
+    <p style="color: red;">{{loginError}}</p>
+    {{/if}}
+
+    {{#if registrationSuccess}}
+    <p style="color: green;">{{registrationSuccess}}</p>
+    {{/if}}
+
     <p>Don't have an account? <a href="/registration">Register here</a></p> <!-- Link to registration page -->
  </body>
 

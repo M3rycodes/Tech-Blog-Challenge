@@ -15,7 +15,7 @@ const BlogPost = sequelize.define('BlogPost', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'User', // Reference to the User model
+      model: 'user', // Reference to the User model
       key: 'id',
     },
   },
